@@ -1,12 +1,26 @@
 import streamlit as st
 import re
-import os
+import random
+import time
+
 
 intentions = {
     'Secretaria': 'Me direcionando para a secretária',
     'Laboratório': 'Indo para o laboratório ',
     '': ''
 }
+
+def response_generator():
+    response = random.choice(
+        [
+            "Hello there! How can I assist you today?",
+            "Hi, human! Is there anything I can help you with?",
+            "Do you need help?",
+        ]
+    )
+    for word in response.split():
+        yield word + " "
+        time.sleep(0.05)
 
 st.title("Bem vindo ao chatbot3000!")
 
@@ -23,12 +37,9 @@ if prompt := st.chat_input("What is up?"):
     st.chat_message("user").markdown(prompt)
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
-
-    # Get response from chatbot
-    response = intentions.get(prompt, "Não entendi o que você quis dizer")
     
     # Display chatbot response in chat message container
     with st.chat_message("assistant"):
-        st.markdown(response)
+        response = st.write_stream(response_generator())   
     
     st.session_state.messages.append({"role": "assistant", "content": response})
